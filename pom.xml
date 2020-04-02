@@ -1,0 +1,181 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.cloudera.example</groupId>
+	<artifactId>cloudera-impala-jdbc-uber</artifactId>
+	<version>1.0</version>
+	<packaging>jar</packaging>
+	<description>Cloudera Impala JDBC for CDH 5.7.0</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<impala.jdbc.version>2.6.15.1017</impala.jdbc.version>
+		<uber.jar.name>cloudera-impala-jdbc-uber</uber.jar.name>
+		<uber.jar.main.class>com.cloudera.example.ClouderaImpalaJdbcExample</uber.jar.main.class>
+	</properties>
+	
+	<dependencies>
+		<!-- https://www.cloudera.com/downloads/connectors/impala/jdbc/2-6-15.html -->
+		<dependency>
+			<groupId>com.cloudera.impala.jdbc</groupId>
+			<artifactId>ImpalaJDBC42</artifactId>
+			<version>${impala.jdbc.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.hadoop/commons-logging -->
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-common -->
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-common</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.hive/hive-jdbc -->
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-jdbc</artifactId>
+			<version>3.1.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.hive/hive-metastore -->
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-metastore</artifactId>
+			<version>3.1.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.hive/hive-service -->
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-service</artifactId>
+			<version>3.1.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.12</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.4.13</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.thrift/libfb303 -->
+		<dependency>
+			<groupId>org.apache.thrift</groupId>
+			<artifactId>libfb303</artifactId>
+			<version>0.9.3</version>
+			<type>pom</type>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.thrift/libthrift -->
+		<dependency>
+			<groupId>org.apache.thrift</groupId>
+			<artifactId>libthrift</artifactId>
+			<version>0.13.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/log4j/log4j -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.11.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.11.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.30</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.30</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.1.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<manifestEntries>
+										<Main-Class>Harness</Main-Class>
+									</manifestEntries>
+								</transformer>
+							</transformers>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<includes>
+										<include>**/*.class</include>
+										<include>**/*-version-info.properties</include>
+										<include>**/*.MF</include>
+									</includes>
+								</filter>
+								<filter>
+									<artifact>org.apache.hadoop:hadoop-common</artifact>
+									<excludes>
+										<exclude>org/apache/hadoop/util/VersionInfo</exclude>
+									</excludes>
+								</filter>
+							</filters>
+<!--							<artifactSet>-->
+<!--								<includes>-->
+<!--									<include>com.google.guava:guava</include>-->
+<!--									<include>commons-codec:commons-codec</include>-->
+<!--									<include>commons-lang:commons-lang</include>-->
+<!--									<include>commons-configuration:commons-configuration</include>-->
+<!--									<include>commons-collections:commons-collections</include>-->
+<!--									<include>org.apache.curator:curator-client</include>-->
+<!--									<include>org.apache.curator:curator-framework</include>-->
+<!--									<include>org.apache.hadoop:hadoop-common</include>-->
+<!--									<include>org.apache.hadoop:hadoop-auth</include>-->
+<!--									<include>org.apache.hive:hive-common</include>-->
+<!--									<include>org.apache.hive:hive-jdbc</include>-->
+<!--									<include>org.apache.hive:hive-metastore</include>-->
+<!--									<include>org.apache.hive:hive-service</include>-->
+<!--									<include>org.apache.hive.shims:*</include>-->
+<!--									<include>org.apache.httpcomponents:httpclient</include>-->
+<!--									<include>org.apache.httpcomponents:httpcore</include>-->
+<!--									<include>org.apache.thrift:libthrift</include>-->
+<!--									<include>org.apache.zookeeper:zookeeper</include>-->
+<!--									<include>org.slf4j:slf4j-api</include>-->
+<!--									<include>org.slf4j:jcl-over-slf4j</include>-->
+<!--								</includes>-->
+<!--							</artifactSet>-->
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

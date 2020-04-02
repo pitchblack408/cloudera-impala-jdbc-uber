@@ -1,0 +1,1 @@
+This folder holds some simple sample sql data for impala.
