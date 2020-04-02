@@ -107,6 +107,9 @@ Explanation for required flags and other options are in the following table:
   * password: cloudera
   
 ### 2.2 DbVisualizer
+
+* https://www.dbvis.com
+
 Below is an example configuration using DbVisualizer:
 
 Open the Diver Manager dialog ("Tools" > "Driver Manager...") and hit the "Create a new driver" icon.
